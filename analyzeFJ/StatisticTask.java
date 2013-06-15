@@ -5,7 +5,7 @@ import java.util.concurrent.RecursiveTask;
 
 public class StatisticTask extends RecursiveTask<StatisticResult> {
 
-    private final static int THRESHOLD = 100_000;
+    private final static int THRESHOLD = 1_000;
 
     private final Customer[] customers;
     private int start;

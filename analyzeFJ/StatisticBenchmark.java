@@ -25,8 +25,8 @@ public class StatisticBenchmark {
         // print computing result
         final StatisticResult sequentialResult = computeSequential();
         final StatisticResult parallelResult = computeParallel();
-        assert (sequentialResult.getHighestCustomer().getName().equals("ROFL"));
-        assert (sequentialResult.getHighestCustomer().getSales().equals(new BigDecimal(2)));
+        assert (sequentialResult.getHighestCustomer().getName().equals(parallelResult.getHighestCustomer().getName()));
+        assert (sequentialResult.getTotalSale().equals(parallelResult.getTotalSale()));
         printResult(sequentialResult);
         printResult(parallelResult);
         final double percentage = ((double) (sequential / loops) / (double) (parallel / loops));
