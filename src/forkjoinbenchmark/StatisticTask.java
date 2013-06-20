@@ -21,9 +21,9 @@ public class StatisticTask extends RecursiveTask<StatisticResult> {
     protected StatisticResult compute() {
         final int length = end - start;
         if ((length) < THRESHOLD) {
-            return computeDirectly();
+            return Algorithm.computeResult(customers, start, end);
         } else {
-            final int split = (length) / 2;
+            final int split = length >> 1;
             final StatisticTask left = new StatisticTask(customers, start, start + split);
             left.fork();
             final StatisticTask right = new StatisticTask(customers, start + split, end);
@@ -31,12 +31,8 @@ public class StatisticTask extends RecursiveTask<StatisticResult> {
         }
     }
 
-    private StatisticResult computeDirectly() {
-        return Algorithm.computeResult(customers, start, end);
-    }
-
     private StatisticResult joinResult(StatisticResult leftResult, StatisticResult rightResult) {
-        BigDecimal totalSales = leftResult.getTotalSale().add(rightResult.getTotalSale());
+        final BigDecimal totalSales = leftResult.getTotalSale().add(rightResult.getTotalSale());
         if (leftResult.getHighestCustomer().getSales().compareTo(rightResult.getHighestCustomer().getSales()) > 0) {
             return new StatisticResult(leftResult.getHighestCustomer(), totalSales);
         } else {

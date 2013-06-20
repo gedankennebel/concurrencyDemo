@@ -10,15 +10,15 @@ public class ForkJoinBenchmark {
     static private Customer[] customers;
 
     public static void main(String[] args) {
-        long parallel = 0;
-        long sequential = 0;
+        long parallelComputationTime = 0;
+        long sequentialComputationTime = 0;
         final int loops = 25;
         setUp();
         for (int j = 0; j < loops; j++) {
-            sequential += computeSequential().getCalculationTime();
-            parallel += computeParallel().getCalculationTime();
+            sequentialComputationTime += computeSequential().getCalculationTime();
+            parallelComputationTime += computeParallel().getCalculationTime();
         }
-        tearDown(sequential, parallel, loops);
+        tearDown(sequentialComputationTime, parallelComputationTime, loops);
     }
 
     private static void tearDown(final long sequential, final long parallel, final int loops) {
@@ -59,20 +59,21 @@ public class ForkJoinBenchmark {
     }
 
     private static StatisticResult computeParallel() {
+        final StatisticResult result;
         final ForkJoinPool forkJoinPool = new ForkJoinPool();
         final StatisticTask statisticTask = new StatisticTask(customers, 0, customers.length);
         final long start = System.currentTimeMillis();
-        final StatisticResult result = forkJoinPool.invoke(statisticTask);
+        result = forkJoinPool.invoke(statisticTask);
         final long end = System.currentTimeMillis() - start;
         return new StatisticResult(result.getHighestCustomer(), result.getTotalSale(), end);
     }
 
     private static StatisticResult computeSequential() {
-        final StatisticResult statisticResult;
+        final StatisticResult result;
         final long start = System.currentTimeMillis();
-        statisticResult = Algorithm.computeResult(customers, 0, customers.length);
+        result = Algorithm.computeResult(customers, 0, customers.length);
         final long end = System.currentTimeMillis() - start;
-        return new StatisticResult(statisticResult.getHighestCustomer(), statisticResult.getTotalSale(), end);
+        return new StatisticResult(result.getHighestCustomer(), result.getTotalSale(), end);
     }
 
     private static void printResult(StatisticResult result) {
