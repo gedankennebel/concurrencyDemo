@@ -1,11 +1,11 @@
-package analyzeFJ;
+package forkjoinbenchmark;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class StatisticBenchmark {
+public class ForkJoinBenchmark {
 
     static private Customer[] customers;
 
@@ -27,12 +27,16 @@ public class StatisticBenchmark {
         final StatisticResult parallelResult = computeParallel();
         assert (sequentialResult.getHighestCustomer().getName().equals(parallelResult.getHighestCustomer().getName()));
         assert (sequentialResult.getTotalSale().equals(parallelResult.getTotalSale()));
+        System.out.println("Result of the last sequential computation run:");
+        System.out.println("----------------------------------------------");
         printResult(sequentialResult);
+        System.out.println("Result of the last parallel computation run:");
+        System.out.println("--------------------------------------------");
         printResult(parallelResult);
         final double percentage = ((double) (sequential / loops) / (double) (parallel / loops));
         System.out.println("benchmark done!\n");
-        System.out.println("Average Parallel " + parallel / loops);
-        System.out.println("Average Sequential " + sequential / loops);
+        System.out.println("Average Parallel: " + parallel / loops);
+        System.out.println("Average Sequential: " + sequential / loops);
         System.out.println("Fork/Join is about " +
                 (NumberFormat.getPercentInstance().format(percentage) + " faster! "));
     }
@@ -64,17 +68,11 @@ public class StatisticBenchmark {
     }
 
     private static StatisticResult computeSequential() {
+        final StatisticResult statisticResult;
         final long start = System.currentTimeMillis();
-        BigDecimal totalSales = new BigDecimal(0);
-        Customer maxCustomer = new Customer("", new BigDecimal(-1));
-        for (Customer customer : customers) {
-            if (customer.getSales().compareTo(maxCustomer.getSales()) > 0) {
-                maxCustomer = customer;
-            }
-            totalSales = totalSales.add(customer.getSales());
-        }
+        statisticResult = Algorithm.computeResult(customers, 0, customers.length);
         final long end = System.currentTimeMillis() - start;
-        return new StatisticResult(maxCustomer, totalSales, end);
+        return new StatisticResult(statisticResult.getHighestCustomer(), statisticResult.getTotalSale(), end);
     }
 
     private static void printResult(StatisticResult result) {

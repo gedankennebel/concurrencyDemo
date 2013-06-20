@@ -1,4 +1,4 @@
-package analyzeFJ;
+package forkjoinbenchmark;
 
 import java.math.BigDecimal;
 

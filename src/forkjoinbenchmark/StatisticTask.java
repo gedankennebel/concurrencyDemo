@@ -1,4 +1,4 @@
-package analyzeFJ;
+package forkjoinbenchmark;
 
 import java.math.BigDecimal;
 import java.util.concurrent.RecursiveTask;
@@ -19,10 +19,11 @@ public class StatisticTask extends RecursiveTask<StatisticResult> {
 
     @Override
     protected StatisticResult compute() {
-        if ((end - start) < THRESHOLD) {
+        final int length = end - start;
+        if ((length) < THRESHOLD) {
             return computeDirectly();
         } else {
-            final int split = (end - start) / 2;
+            final int split = (length) / 2;
             final StatisticTask left = new StatisticTask(customers, start, start + split);
             left.fork();
             final StatisticTask right = new StatisticTask(customers, start + split, end);
@@ -31,15 +32,7 @@ public class StatisticTask extends RecursiveTask<StatisticResult> {
     }
 
     private StatisticResult computeDirectly() {
-        BigDecimal totalSales = new BigDecimal(0);
-        Customer maxCustomer = new Customer("", new BigDecimal(-1));
-        for (int i = start; i < end; i++) {
-            if (customers[i].getSales().compareTo(maxCustomer.getSales()) > 0) {
-                maxCustomer = customers[i];
-            }
-            totalSales = totalSales.add(customers[i].getSales());
-        }
-        return new StatisticResult(maxCustomer, totalSales);
+        return Algorithm.computeResult(customers, start, end);
     }
 
     private StatisticResult joinResult(StatisticResult leftResult, StatisticResult rightResult) {

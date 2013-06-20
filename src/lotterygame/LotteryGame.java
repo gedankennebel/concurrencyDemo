@@ -1,12 +1,10 @@
-package producerConsumer;
+package lotterygame;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Phaser;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LotteryGame {
 
@@ -14,19 +12,8 @@ public class LotteryGame {
     private volatile boolean gameRunning = true;
     private Phaser phaser;
 
-    public AtomicInteger getNumberOfThreads() {
-        return numberOfThreads;
-    }
-
-    public void setNumberOfThreads(AtomicInteger numberOfThreads) {
-        this.numberOfThreads = numberOfThreads;
-    }
-
-    AtomicInteger numberOfThreads;
-
-    public LotteryGame() {
-        numberOfThreads = new AtomicInteger(ThreadLocalRandom.current().nextInt(2, 10));
-        phaser = new Phaser(numberOfThreads.get()) {
+    public LotteryGame(final int numberOfParties) {
+        phaser = new Phaser(numberOfParties) {
             @Override
             protected boolean onAdvance(int phase, int parties) {
                 if (parties > 1) {
@@ -48,7 +35,7 @@ public class LotteryGame {
     }
 
     private boolean endGame(int phase) {
-        System.out.println("Finish after " + (phase + 1) + " rounds! " + getWinner().getName() + " won the game!");
+        System.out.println("\nFinish after " + (phase + 1) + " rounds! " + getWinner().getName() + " won the game!");
         getWinner().interrupt();
         setGameRunning(false);
         return true;
@@ -57,7 +44,7 @@ public class LotteryGame {
     private boolean kickOutLoser() {
         Thread looserThread = getLooser();
         if (looserThread != null) {
-            System.out.println(looserThread.getName() + " is out!");
+            System.out.println("Decision: " + looserThread.getName() + " is out!\n");
             map.remove(looserThread);
             looserThread.interrupt();
         }
